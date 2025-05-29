@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zeta Framework - Demo Simple</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f0f2f5;
+            color: #333;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1a73e8;
+            margin-bottom: 20px;
+        }
+        
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+        }
+        
+        .section-title {
+            color: #1a73e8;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        input, button {
+            padding: 8px 12px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        button {
+            background: #1a73e8;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background: #1557b0;
+        }
+        
+        .output {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Zeta Framework - Demo Simple</h1>
+        
+        <div class="section" z:init="nombre = ''">
+            <div class="section-title">📝 Estado Básico</div>
+            <input z:model="nombre" placeholder="Escribe tu nombre">
+            <div class="output">
+                Hola <span z:text="nombre || 'Anónimo'"></span>!
+            </div>
+        </div>
+        
+        <div class="section" z:init="contador = 0">
+            <div class="section-title">Contador</div>
+            <div class="output" z:text="contador"></div>
+            <button z:click="contador++">➕ Incrementar</button>
+            <button z:click="contador--">➖ Decrementar</button>
+            <button z:click="contador = 0">Reset</button>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">📋 Lista de Tareas</div>
+            <input z:model="nuevaTarea" placeholder="Nueva tarea">
+            <button z:click="agregarTarea()">➕ Agregar</button>
+            
+            <ul class="output">
+                <template z:each="item in tareas">
+                    <li z:text="item"></li>
+                </template>
+            </ul>
+            
+            <div z="show: !tareas || tareas.length === 0" class="output">
+                No hay tareas pendientes
+            </div>
+        </div>
+    </div>
+
+    <script src="zeta.js"></script>
+    <script>
+        // Inicializar el estado primero
+        Zeta.init({
+            nuevaTarea: '',
+            tareas: []
+        });
+
+        // Luego definir el helper
+        Zeta.helper('agregarTarea', function() {
+            if (this.nuevaTarea && this.nuevaTarea.trim()) {
+                const tareaTrim = this.nuevaTarea.trim();
+                // Forzar la actualización del estado
+                const nuevasTareas = Array.isArray(this.tareas) ? [...this.tareas] : [];
+                nuevasTareas.push(tareaTrim);
+                this.tareas = nuevasTareas;
+                this.nuevaTarea = '';
+                
+                // Forzar actualización del DOM
+                requestAnimationFrame(() => {
+                    Zeta.scan();
+                });
+            }
+        });
+
+        // Finalmente escanear el DOM
+        Zeta.scan();
+    </script>
+</body>
+</html>
